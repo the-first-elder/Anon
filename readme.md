@@ -6,5 +6,4 @@
 
 ### Helpers are in merkle.js and impl in mm.js
 # noir-dev-mode
-# noir-dev-mode
-# noir-dev-mode
+#
