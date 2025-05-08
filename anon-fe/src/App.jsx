@@ -7,6 +7,7 @@ import {
 import AppLayout from "./Layout/AppLayout";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
+import './connection'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
