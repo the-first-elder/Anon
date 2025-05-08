@@ -2,14 +2,15 @@ import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useState } from "react";
 import usePinataUpload from "../hooks/usePinataUpload";
 import useCreateNft from "../hooks/useCreateNft";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 const CreateNFT = () => {
   let [isOpen, setIsOpen] = useState(false);
+  const { address } = useAppKitAccount()
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
   const [nftName, setNftName] = useState("");
   const [nftSymbol, setNftSymbol] = useState("");
-  const [ownerAddress, setOwnerAddress] = useState("");
   const [error, setError] = useState("");
 
   const { uploadToPinata, isUploading } = usePinataUpload();
@@ -24,7 +25,7 @@ const CreateNFT = () => {
   }
 
   const handleNftCreation = async () => {
-    await handleCreate(nftName, nftSymbol, imageUrl, ownerAddress);
+    await handleCreate(nftName, nftSymbol, imageUrl, address);
     setNftName("");
     setNftSymbol("");
     setImageUrl("");
@@ -123,13 +124,12 @@ const CreateNFT = () => {
                 placeholder="Enter NFTsymbol Eg. APE"
                 className="border mb-4 border-white/20 w-[100%] rounded-md hover:outline-0 p-3"
               />
-              <p className="mb-2">Owner's address</p>
               <input
                 type="text"
-                value={ownerAddress}
-                onChange={(e) => setOwnerAddress(e.target.value)}
+                value={address}
+                readonly
                 placeholder="Enter walletaddress of owner"
-                className="border mb-4 border-white/20 w-[100%] rounded-md hover:outline-0 p-3"
+                className="border mb-4 border-white/20 w-[100%] rounded-md hover:outline-0 p-3 hidden"
               />
 
               <div className="mt-4">

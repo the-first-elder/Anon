@@ -28,6 +28,7 @@ export const ownerships = [
   signer.address,
   ethers.ZeroAddress,
   signer.address,
+  "0xe25327d529a722BB05ca7cc495528e2CB2Da520F",
   // Add more owners here
 ];
 
@@ -56,6 +57,7 @@ export function getProofForUser(address, tokenId) {
     root: tree.getRoot().toString("hex"), // Field as string
   };
 }
+
 
 // Function to verify a Merkle proof for a given address and token ID
 export function verifyProof({ address, tokenId, siblings, path, root }) {

@@ -5,10 +5,12 @@ import mobileLogo from "../assets/foot-logo.svg"
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import CreateNFT from "../components/CreateNFT";
 import NotConnected from "../components/NotConnected";
+import NFTData from "../components/NFTData";
+import MerkleDemo from "../components/merkleDemo";
 
 const Dashboard = () => {
   const { isConnected } = useAppKitAccount();
-//   console.log(isConnected)
+ 
   const { open } = useAppKit();
   return (
     <div>
@@ -72,6 +74,8 @@ const Dashboard = () => {
             <img src="https://img.freepik.com/free-vector/hand-drawn-nft-style-ape-illustration_23-2149619499.jpg?ga=GA1.1.770405697.1735080768&semt=ais_hybrid&w=740" alt=""  className="w-[100%] h-[150px] rounded-3xl object-cover object-center my-3"/>
             <button className="text-white bg-dark p-3 rounded-lg w-[100%]">Verify</button>
         </div>
+        <NFTData />
+        <MerkleDemo />
         </div>
       </section>
       </div> : <NotConnected />}
