@@ -29,7 +29,6 @@ const CreateNFT = () => {
     setNftName("");
     setNftSymbol("");
     setImageUrl("");
-    setOwnerAddress("");
     close()
   };
 
@@ -54,7 +53,7 @@ const CreateNFT = () => {
   };
 
   return (
-    <>
+    <div className="flex flex-col justify-center items-center">
       <Button
         onClick={open}
         className="text-white bg-dark p-3 rounded-lg w-[100%] lg:w-[50%] md:w-[50%] focus:not-data-focus:outline-none cursor-pointer  data-hover:text-lightgray"
@@ -127,7 +126,7 @@ const CreateNFT = () => {
               <input
                 type="text"
                 value={address}
-                readonly
+                readOnly
                 placeholder="Enter walletaddress of owner"
                 className="border mb-4 border-white/20 w-[100%] rounded-md hover:outline-0 p-3 hidden"
               />
@@ -144,7 +143,7 @@ const CreateNFT = () => {
           </div>
         </div>
       </Dialog>
-    </>
+    </div>
   );
 };
 

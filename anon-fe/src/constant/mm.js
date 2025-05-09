@@ -15,6 +15,8 @@ import fs from 'fs';
 import path from 'path';
 import abi from "./abi.json"  with { type: "json" };
 import { config } from "dotenv";
+import useGetNfts from "../hooks/useGetNfts.jsx";
+import { useAppKitAccount } from "@reown/appkit/react";
 config();
 //   get signer
 const contractAddress = "0x41167b14C9Cc671dEeC3f2c2FA802445B7763Ab8"
@@ -35,15 +37,16 @@ const { signature, owner_pubkey_x, owner_pubkey_y, messageBytes } =
 
 // console.log({ signature, owner_pubkey_x, owner_pubkey_y, messageBytes });
 
-const { siblings, path: paths, root } = getProofForUser(signer.address, 1);
+const { allNft} = useGetNfts();
+const { address } = useAppKitAccount()
+const { siblings, path: paths, root } = getProofForUser(signer.address, allNft);
 // fake user
 // const { siblings2, path: paths2, root:root2 } = getProofForUser(signer2.address, 1);
 
 console.log("proof", { siblings, paths, root });
 
 const isValid = verifyProof({
-  address: signer.address,
-  tokenId: 1,
+  address: address,
   siblings: siblings,
   path: paths,
   root: root,

@@ -7,9 +7,12 @@ import {
   SigningKey,
 } from "ethers";
 import { MerkleTree } from "merkletreejs";
-import { Buffer } from "node:buffer";
+import { UltraHonkBackend } from "@aztec/bb.js";
+import { Noir } from "@noir-lang/noir_js";
+import nftgate from "./zk/target/nftgate.json" with { type: "json" };
+// import { Buffer } from "node:buffer";
 import SHA256 from "crypto-js/sha256.js";
-import { exit } from "node:process";
+// import { exit } from "node:process";
 
 // Initialize test wallets and provider for demonstration purposes
 // These are used to simulate NFT ownership and signing operations
@@ -34,9 +37,9 @@ export const ownerships = [
 
 // Function to generate a Merkle proof for a specific user's address and token ID
 // This proof can be used to verify ownership without revealing the entire tree
-export function getProofForUser(address, tokenId) {
+export function getProofForUser(address, owners) {
   // Create leaves by hashing each address in the ownership list
-  const leaves = ownerships.map((address) =>
+  const leaves = owners.map((address) =>
     // hashLeaf(address)
     SHA256(address)
   );
@@ -60,7 +63,7 @@ export function getProofForUser(address, tokenId) {
 
 
 // Function to verify a Merkle proof for a given address and token ID
-export function verifyProof({ address, tokenId, siblings, path, root }) {
+export function verifyProof({ address, siblings, path, root }) {
   // Reconstruct the leaves from the ownership list
   const leaves = ownerships.map((address) =>
     // hashLeaf(address)
@@ -79,7 +82,7 @@ export function verifyProof({ address, tokenId, siblings, path, root }) {
 }
 
 // Function to sign a message and extract the signer's public key components
-export async function signMessageAndGetPubkey(signer, message) {
+export async function signMessageAndGetPubkey(signer, message, allNft) {
   // Sign the message using the signer's private key
   const signature = await signer.signMessage(message);
 
@@ -96,10 +99,67 @@ export async function signMessageAndGetPubkey(signer, message) {
   const owner_pubkey_y = pubkeyBytes.slice(32, 64);
 
   // Return all the necessary components for verification
-  return {
-    signature: sigBytes,
-    owner_pubkey_x: owner_pubkey_x,
-    owner_pubkey_y: owner_pubkey_y,
-    messageBytes: toBeArray(digest).slice(0, 32), // 32 bytes
-  };
+  // return {
+  //   signature: sigBytes,
+  //   owner_pubkey_x: owner_pubkey_x,
+  //   owner_pubkey_y: owner_pubkey_y,
+  //   messageBytes: toBeArray(digest).slice(0, 32), // 32 bytes
+  // };
+  const publicInputs = {
+    owner_pubkey_x: Array.from(owner_pubkey_x),  // 32 bytes
+    owner_pubkey_y:  Array.from(owner_pubkey_y),  // 32 bytes
+    message:  Array.from(toBeArray(digest).slice(0, 32)),           // 32 bytes
+    signature: Array.from(sigBytes),            // 64 bytes
+  }
+  // try {
+  //   const validProof = await generateProof(publicInputs)
+  //   console.log(validProof)
+  // } catch(e) {
+  //   console.log("Invalid signer", e)
+  // }
+
+  try {
+    const { siblings, path: paths, root } = getProofForUser(signer.address, allNft);   
+    const isValid = verifyProof({
+      address: signer.address,
+      siblings: siblings,
+      path: paths,
+      root: root,
+    });
+    
+    console.log("Is proof valid?", isValid);
+    return isValid;
+  } catch(e) {
+    console.log("Invalid User", e, allNft)
+  }
+}
+
+async function generateProof(publicInputs) {
+  const noir = new Noir(nftgate);
+  const backend = new UltraHonkBackend(nftgate.bytecode);
+  console.log("logs", "Generating witness... ⏳");
+  const { witness } = await noir.execute({ input: publicInputs });
+  console.log("logs", "Generated witness... ✅");
+  console.log("logs", "Generating proof... ⏳");
+  const proof = await backend.generateProof(witness);
+  console.log("logs", "Generated proof... ✅",);
+  console.log('logs', 'Verifying proof... ⌛');
+const isValid = await backend.verifyProof(proof);
+console.log("logs", `Proof is ${isValid ? "valid" : "invalid"}... ✅`);
+  // Deploy verifier and verify proof
+//   const verifier = await deployVerifier();
+//   const publicInputsBytes32 = [
+//     ethers.hexlify(owner_pubkey_x),
+//     ethers.hexlify(owner_pubkey_y),
+//     ethers.hexlify(messageBytes),
+//     ethers.hexlify(signature.slice(0, 32)),
+//     ethers.hexlify(signature.slice(32, 64))
+//   ];
+//   const publicInputsBytes32 = [publicInputs].map(input => ethers.keccak256(new Uint8Array(input)));
+  
+//   console.log("Verifying proof...",proof.proof.length);
+//   const isValid = await verifier.verify(proof.proof, publicInputsBytes32);
+//   console.log("Proof verified:", isValid);
+  
+  return { proof, isValid };
 }
