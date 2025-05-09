@@ -13,6 +13,7 @@ const NFTData = () => {
   const [nft, setNft] = useState([]);
   const { isConnected } = useAppKitAccount();
   const { walletProvider } = useAppKitProvider("eip155");
+  const [holders, setHolders] = useState([])
 
   const fetchAllNftData = useCallback(async () => {
     if (!isConnected || !walletProvider || !Array.isArray(allNft)) return;
@@ -35,9 +36,41 @@ const NFTData = () => {
     }
   }, [allNft, isConnected, walletProvider]);
 
+  const fetchRecipients = useCallback(async () => {
+    if (!isConnected || !walletProvider || !Array.isArray(allNft)) return;
+  
+    try {
+      const results = await Promise.all(
+        allNft.map(async (address) => {
+          try {
+            const nftContract = new Contract(address, nftAbi, readOnlyProvider);
+            const result = await nftContract.getAllRecipients();
+            const recipients = Array.from(result); 
+            
+            return {
+              address,
+              recipients,
+            };
+          } catch (err) {
+            console.warn(`Contract at ${address} doesn't support getAllRecipients`);
+            return {
+              address,
+              recipients: [],
+            };
+          }
+        })
+      );
+      setHolders(results); 
+    } catch (error) {
+      console.log("Error fetching recipients from all user NFTs", error);
+    }
+  }, [allNft, isConnected, walletProvider]);
+  
+
   useEffect(() => {
     if (allNft.length > 0) {
       fetchAllNftData();
+      fetchRecipients()
     }
   }, [fetchAllNftData]);
 
@@ -47,6 +80,8 @@ const NFTData = () => {
     }
     return url || "";
   };
+
+//   console.log("Help", holders)
 
   return (
     <div className="relative">
