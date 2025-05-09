@@ -6,6 +6,7 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import { useAppKitProvider } from "@reown/appkit/react";
 import { readOnlyProvider } from "../constants/readOnlyProvider";
 import BatchMint from "./BatchMint";
+import { NavLink } from "react-router-dom";
 
 const NFTData = () => {
   const { allNft } = useGetNfts();
@@ -83,6 +84,7 @@ const NFTData = () => {
               />
              <BatchMint address={info.address}/>
              <button className="text-white bg-dark p-3 rounded-lg w-[100%] mt-3" >Verify</button>
+             <NavLink to='/dashboard/forum'>Use</NavLink>
              
             </div>
           ))}

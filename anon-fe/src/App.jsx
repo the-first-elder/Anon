@@ -7,6 +7,7 @@ import {
 import AppLayout from "./Layout/AppLayout";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
+import Forum from "./pages/Forum";
 import './connection'
 
 const router = createBrowserRouter(
@@ -14,6 +15,7 @@ const router = createBrowserRouter(
     <Route element={<AppLayout />}>
       <Route index element={<Home />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/dashboard/forum" element={<Forum />} />
     </Route>
   )
 );

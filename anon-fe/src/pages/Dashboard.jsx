@@ -18,9 +18,10 @@ const Dashboard = () => {
   const { open } = useAppKit();
   return (
     <div>
-      <header className="lg:flex md:flex hidden justify-between items-center w-[90%] mx-auto my-12">
+      <header className="flex justify-between items-center w-[90%] mx-auto my-12">
         <NavLink to="/">
-          <img src={logo} alt="" className="w-[200px]" />
+          <img src={logo} alt="" className="w-[200px] hidden lg:block md:block" /> 
+          <img src={mobileLogo} alt="" className='w-[60px] block lg:hidden md:hidden'/>
         </NavLink>
         {!isConnected ? (
           <button className="flex py-3 px-6 rounded-lg items-center bg-dark text-white font-Roboto font-semibold"  onClick={() => open()}>
@@ -30,16 +31,6 @@ const Dashboard = () => {
           <w3m-button />
         )}
       </header>
-      <header className='flex lg:hidden md:hidden justify-between items-center w-[90%] mx-auto my-12'>
-              <img src={mobileLogo} alt="" className='w-[60px]'/>
-              {!isConnected ? (
-          <button className="flex py-3 px-6 rounded-lg items-center bg-dark text-white font-Roboto font-semibold"  onClick={() => open()}>
-            Connect Wallet
-          </button>
-        ) : (
-          <w3m-button />
-        )}
-          </header>
       {isConnected ? <div>
       <h2 className="text-Roboto font-bold lg:text-[28px] md:text-[24px] text-[20px] my-6 text-center">Create your own forum.</h2>
       <section className="border border-black/40 rounded-3xl p-8 lg:w-[50%] md:w-[50%] w-[90%] mx-auto">
