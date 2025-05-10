@@ -13,7 +13,7 @@ const NFTData = () => {
   const [nft, setNft] = useState([]);
   const { isConnected } = useAppKitAccount();
   const { walletProvider } = useAppKitProvider("eip155");
-  const [holders, setHolders] = useState([])
+  const [holders, setHolders] = useState([]);
 
   const fetchAllNftData = useCallback(async () => {
     if (!isConnected || !walletProvider || !Array.isArray(allNft)) return;
@@ -38,21 +38,23 @@ const NFTData = () => {
 
   const fetchRecipients = useCallback(async () => {
     if (!isConnected || !walletProvider || !Array.isArray(allNft)) return;
-  
+
     try {
       const results = await Promise.all(
         allNft.map(async (address) => {
           try {
             const nftContract = new Contract(address, nftAbi, readOnlyProvider);
             const result = await nftContract.getAllRecipients();
-            const recipients = Array.from(result); 
-            
+            const recipients = Array.from(result);
+
             return {
               address,
               recipients,
             };
           } catch (err) {
-            console.warn(`Contract at ${address} doesn't support getAllRecipients`);
+            console.warn(
+              `Contract at ${address} doesn't support getAllRecipients`
+            );
             return {
               address,
               recipients: [],
@@ -60,17 +62,16 @@ const NFTData = () => {
           }
         })
       );
-      setHolders(results); 
+      setHolders(results);
     } catch (error) {
       console.log("Error fetching recipients from all user NFTs", error);
     }
   }, [allNft, isConnected, walletProvider]);
-  
 
   useEffect(() => {
     if (allNft.length > 0) {
       fetchAllNftData();
-      fetchRecipients()
+      fetchRecipients();
     }
   }, [fetchAllNftData]);
 
@@ -81,7 +82,7 @@ const NFTData = () => {
     return url || "";
   };
 
-//   console.log("Help", holders)
+  //   console.log("Help", holders)
 
   return (
     <div className="relative">
@@ -117,10 +118,10 @@ const NFTData = () => {
                 alt={info.name}
                 className="w-full h-[150px] rounded-3xl object-cover object-center my-3"
               />
-             <BatchMint address={info.address}/>
-             <button className="text-white bg-dark p-3 rounded-lg w-[100%] mt-3" >Verify</button>
-             <NavLink to='/dashboard/forum'>Use</NavLink>
-             
+              <BatchMint address={info.address} />
+              <button className="text-white bg-dark p-3 rounded-lg w-[100%] mt-3">
+                Verify
+              </button>
             </div>
           ))}
         </div>

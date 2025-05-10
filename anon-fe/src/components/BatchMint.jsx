@@ -31,10 +31,10 @@ const BatchMint = ({ address }) => {
 
   const handleBatchMint = useCallback(
     async () => {
-      if (!recipients) {
-        toast.error("Invalid input!");
-        return;
-      }
+    //   if (!recipients) {
+    //     toast.error("Invalid input!");
+    //     return;
+    //   }
 
       if (Number(chainId) !== Number(sepolia.id)) {
         toast.error("You're not connected to Sepolia");
@@ -57,7 +57,6 @@ const BatchMint = ({ address }) => {
         if (receipt.status === 1) {
           toast.success("Mint Successful");
           return;
-          setRecipients("")
         }
         toast.error("Failed to Create NFT");
         return;
@@ -68,6 +67,9 @@ const BatchMint = ({ address }) => {
         });
         console.log(err);
         setRecipients("")
+      } finally {
+        setRecipients("")
+        close()
       }
     },
     [isConnected, chainId]
